@@ -1,16 +1,25 @@
+// src/main/java/com/transistflow/order/mappers/OrderItemMapper.java
 package com.transistflow.order.mappers;
 
 import com.transistflow.commans.dtos.order.OrderItemDto;
-import com.transistflow.commans.events.OrderItemPayload;
 import com.transistflow.order.domain.OrderItemEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
+)
 public interface OrderItemMapper {
 
+    @Mapping(source = "productId", target = "productId")
+    @Mapping(source = "quantity",  target = "quantity")
+    @Mapping(source = "price",     target = "price")
     OrderItemEntity toEntity(OrderItemDto dto);
 
+    @Mapping(source = "productId", target = "productId")
+    @Mapping(source = "quantity",  target = "quantity")
+    @Mapping(source = "price",     target = "price")
     OrderItemDto toDto(OrderItemEntity entity);
-
-    OrderItemPayload toPayload(OrderItemEntity entity);
 }

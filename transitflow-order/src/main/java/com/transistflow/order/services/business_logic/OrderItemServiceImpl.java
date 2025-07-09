@@ -29,8 +29,8 @@ public class OrderItemServiceImpl implements OrderItemService {
     public OrderItemDto createOrderItem(Long orderId, OrderItemDto itemDto) {
         log.info("Creating order item for order ID: {}", orderId);
         validationUtil.validateCreateOrderItem(orderId, itemDto);
-
         OrderItemEntity entity = mapToEntityWithOrderId(itemDto, orderId);
+        entity.setOrderId(orderId);
         return saveAndConvert(entity);
     }
 
@@ -72,6 +72,9 @@ public class OrderItemServiceImpl implements OrderItemService {
         return repoService.streamByOrderId(orderId)
                 .map(orderItemMapper::toDto);
     }
+
+
+
 
     // ───────────────────────────────
     // Helper Methods (DRY Utilities)
