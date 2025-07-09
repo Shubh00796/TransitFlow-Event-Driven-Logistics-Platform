@@ -31,4 +31,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItemEntity, Long
      */
     @Query("SELECT i FROM OrderItemEntity i WHERE i.orderId = :orderId")
     Stream<OrderItemEntity> streamByOrderId(Long orderId);
+
+
 }

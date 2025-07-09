@@ -1,6 +1,7 @@
 package com.transistflow.order.services.business_logic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.transistflow.commans.dtos.order.OrderItemDto;
 import com.transistflow.commans.dtos.order.OrderRequestDto;
 import com.transistflow.commans.dtos.order.OrderResponseDto;
 import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
@@ -13,6 +14,7 @@ import com.transistflow.order.domain.OutboxEvent;
 import com.transistflow.order.mappers.OrderMapper;
 import com.transistflow.order.reposiotries.OutboxEventRepository;
 import com.transistflow.order.reposiotries.data_access.OrderRepoService;
+import com.transistflow.order.services.OrderItemService;
 import com.transistflow.order.services.OrderService;
 import com.transistflow.order.utils.OrderValidationUtil;
 import com.transistflow.order.utils.OutboxEventFactoryUtil;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -40,22 +43,39 @@ public class OrderServiceImpl implements OrderService {
     private final ObjectMapper objectMapper;
     private final OutboxEventRepository outboxRepo;
     private final OutboxEventFactoryUtil outboxEventFactory;
+    private final OrderItemService orderItemService;
+
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public OrderResponseDto createOrder(OrderRequestDto request) {
         validationUtil.validateCreateOrder(request);
+        OrderEntity orderEntity = mapper.toEntity(request);
+        OrderEntity savedOrder = repoService.save(orderEntity);
+        saveOrderItemsUsingFK(request, savedOrder);
 
-        OrderEntity order = repoService.save(mapper.toEntity(request));
-
-        // publish Outbox
-        OrderCreatedEvent createdEvent = mapper.toCreatedEvent(order);
-        OutboxEvent outboxEvent = outboxEventFactory.fromEvent(createdEvent, order.getId().toString(), "ORDER");
+        // ✅ Step 4: Publish event
+        OrderCreatedEvent createdEvent = mapper.toCreatedEvent(savedOrder);
+        OutboxEvent outboxEvent = outboxEventFactory.fromEvent(createdEvent, savedOrder.getId().toString(), "ORDER");
         outboxRepo.save(outboxEvent);
 
-        log.info("Created order {}", order.getId());
-        return mapper.toResponse(order);
+        // ✅ Step 5: Build response manually including items
+        OrderResponseDto response = mapper.toResponse(savedOrder);
+        List<OrderItemDto> items = orderItemService.getAllItemsByOrder(savedOrder.getId());
+        response.setItems(items);
+
+        return response;
     }
+
+
+    private void saveOrderItemsUsingFK(OrderRequestDto request, OrderEntity savedOrder) {
+        if (request.getItems() != null && !request.getItems().isEmpty()) {
+            request.getItems().forEach(itemDto -> {
+                orderItemService.createOrderItem(savedOrder.getId(), itemDto);
+            });
+        }
+    }
+
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -64,7 +84,6 @@ public class OrderServiceImpl implements OrderService {
 
         OrderEntity existing = repoService.findById(orderId);
         String oldStatus = existing.getStatus().name();
-
         mapper.updateEntityFromRequest(existing, request);
         OrderEntity updated = repoService.save(existing);
 
@@ -91,6 +110,7 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Deleted order {}", orderId);
     }
+
     @Override
     @Transactional(readOnly = true)
     public OrderResponseDto getOrderById(Long orderId) {

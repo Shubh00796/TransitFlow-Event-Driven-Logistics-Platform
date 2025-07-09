@@ -8,3 +8,4 @@ public class OrderUpdateRequestDto {
     private String destination;
     private String status; // e.g., CANCELLED
 }
+
