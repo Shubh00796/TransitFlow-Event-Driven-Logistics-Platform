@@ -31,7 +31,7 @@
 
 Controller → Validator → Service Interface → Impl → RepositoryService → JPA Repos
                                                ↓
-                                           KafkaPublisher
+                                           KafkaPublisher.
 
 
 transitflow-order/
