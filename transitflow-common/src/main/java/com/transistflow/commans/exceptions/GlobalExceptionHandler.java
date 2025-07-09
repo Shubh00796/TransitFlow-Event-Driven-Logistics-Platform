@@ -1,6 +1,5 @@
 package com.transistflow.commans.exceptions;
 
-
 import com.transistflow.commans.dtos.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -14,19 +13,27 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return buildErrorResponse(ex.getMessage(), request.getRequestURI(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), ex.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+        return buildErrorResponse(ex.getMessage(), request.getRequestURI(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGlobal(Exception ex, HttpServletRequest request) {
-        ApiError error = new ApiError(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return buildErrorResponse(ex.getMessage(), request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    private ResponseEntity<ApiError> buildErrorResponse(String message, String path, HttpStatus status) {
+        ApiError error = new ApiError(
+                LocalDateTime.now(),
+                status.value(),
+                message,
+                path
+        );
+        return new ResponseEntity<>(error, status);
+    }
+
 }

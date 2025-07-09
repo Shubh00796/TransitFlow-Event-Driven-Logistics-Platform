@@ -19,3 +19,37 @@
 4. Delivery module: Receives delivery updates
 
 
+//CHRNOLOGICAL-ORDER
+1. transitflow-common        ← shared DTOs/events/enums
+2. transitflow-order         ← creates order + emits event
+3. transitflow-inventory     ← reserves stock
+4. transitflow-dispatch      ← assigns shipment
+5. transitflow-delivery      ← tracks delivery
+6. transitflow-kafka-config  ← shared Kafka bean config (optional)
+
+🧱 Layered Flow Inside Each Module
+
+Controller → Validator → Service Interface → Impl → RepositoryService → JPA Repos
+                                               ↓
+                                           KafkaPublisher
+
+
+transitflow-order/
+└── src/
+    └── main/
+        ├── java/com/transitflow/order/
+        │   ├── adapter/in/web               ← REST Controllers
+        │   ├── adapter/out/jpa              ← JPA Repositories & Entities
+        │   ├── application/port/in          ← Service Interfaces
+        │   ├── application/port/out         ← Repository Interfaces
+        │   ├── application/service          ← ServiceImpl
+        │   ├── domain                       ← Domain Models
+        │   ├── mapper                       ← MapStruct
+        │   ├── messaging/publisher          ← KafkaPublisher
+        │   └── validator                    ← Request validators
+        └── resources/
+            └── application.yml
+
+
+
+
