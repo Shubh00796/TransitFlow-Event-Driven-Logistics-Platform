@@ -5,6 +5,8 @@ import com.transistflow.commans.enmus.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
+
 @Entity
 @Table(
         name = "orders",
@@ -46,9 +48,9 @@ public class OrderEntity {
      */
     @Column(nullable = false, updatable = false,
             columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private java.time.Instant createdAt;
+    private Instant createdAt;
 
     @Column(nullable = false,
             columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-    private java.time.Instant updatedAt;
+    private Instant updatedAt;
 }
