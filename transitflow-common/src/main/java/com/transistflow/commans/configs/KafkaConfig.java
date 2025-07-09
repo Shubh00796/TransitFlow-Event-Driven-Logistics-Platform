@@ -14,6 +14,7 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,12 +30,22 @@ public class KafkaConfig {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // change if needed
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(config);
+        DefaultKafkaProducerFactory<String, Object> factory =
+                new DefaultKafkaProducerFactory<>(config);
+        // Enable transactions so DB + Kafka can be in one atomic unit
+        factory.setTransactionIdPrefix("order-tx-");
+        return factory;
     }
 
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
+    }
+
+    @Bean
+    public KafkaTransactionManager<String, Object> kafkaTransactionManager(
+            ProducerFactory<String, Object> pf) {
+        return new KafkaTransactionManager<>(pf);
     }
 
     // Consumer config

@@ -2,10 +2,12 @@ package com.transistflow.order.mappers;
 
 import com.transistflow.commans.dtos.order.OrderRequestDto;
 import com.transistflow.commans.dtos.order.OrderResponseDto;
+import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
 import com.transistflow.commans.events.OrderCreatedEvent;
 import com.transistflow.commans.events.OrderStatusChangedEvent;
 import com.transistflow.order.domain.OrderEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.time.Instant;
 
@@ -30,5 +32,7 @@ public interface OrderMapper {
         event.setOccurredAt(occurredAt);
         return event;
     }
+    void updateEntityFromRequest(@MappingTarget OrderEntity order, OrderUpdateRequestDto dto);
+
 
 }

@@ -52,4 +52,38 @@ transitflow-order/
 
 
 
+User Request
+   │
+   ▼
+OrderService
+   ├─ Save Order to DB
+   └─ Save OutboxEvent to DB (same TX)
+   ▲
+   │
+KafkaPublisher (Async)
+   ├─ Poll PENDING events
+   ├─ Send to Kafka
+   └─ Mark as SENT or FAILED
+
+
+
+[Client/API]
+     │
+     ▼
+[OrderService: create/update]
+     │  (DB TX commits)
+     ├─ writes → orders
+     └─ writes → outbox_event (PENDING)
+
+     ── every 3s ──► [OutboxPublisherService]
+                     ├─ fetch PENDING events
+                     ├─ send to Kafka
+                     └─ update outbox_event status to PUBLISHED/FAILED
+
+     ──► [Kafka Broker (Topic: ordercreated)]
+             └─▲
+               │
+     ┌─────────┴─────────┐
+     │                   │
+[InventoryService]   [ShippingService]  etc.
 
