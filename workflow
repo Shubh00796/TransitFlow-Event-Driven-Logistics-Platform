@@ -87,3 +87,10 @@ KafkaPublisher (Async)
      │                   │
 [InventoryService]   [ShippingService]  etc.
 
+
+
+chmod +x transitflow-order/wait-for-mysql.sh
+chmod +x transitflow-inventory/wait-for-mysql.sh
+chmod +x transitflow-dispatch/wait-for-mysql.sh
+chmod +x transitflow-delivery/wait-for-mysql.sh
+

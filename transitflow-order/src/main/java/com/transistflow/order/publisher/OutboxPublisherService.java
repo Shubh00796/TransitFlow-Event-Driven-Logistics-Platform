@@ -22,45 +22,44 @@ public class OutboxPublisherService {
     private final OutboxEventRepository outboxRepo;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    /**
-     * Every 3 seconds, pick up to 100 PENDING events (oldest first),
-     * publish them, and update their status in the same transaction.
-     */
     @Scheduled(fixedDelay = 3000)
     @Transactional
     public void publishPendingEvents() {
-        List<OutboxEvent> events = outboxRepo
-                .findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
+        outboxRepo
+                .findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING)
+                .forEach(this::handleEvent);
+    }
 
-        for (OutboxEvent event : events) {
-            UUID eventId = event.getId();
-            try {
-                // 1) Publish to Kafka (topic = eventType or a fixed topic)
-                kafkaTemplate.send(
-                        event.getEventType().toLowerCase(),   // e.g. "ordercreated"
-                        event.getAggregateId(),               // key
-                        event.getPayload()                    // JSON payload
-                ).get(); // block if you want sync guarantee
-
-                // 2) Mark as PUBLISHED
-                outboxRepo.updateStatusById(
-                        eventId,
-                        OutboxStatus.PUBLISHED,
-                        LocalDateTime.now()
-                );
-
-                log.info("Published OutboxEvent {} → Kafka topic '{}'",
-                        eventId, event.getEventType());
-
-            } catch (Exception ex) {
-                log.error("Failed to publish OutboxEvent {}: {}", eventId, ex.getMessage());
-                // 3) Mark as FAILED so you can alert or retry later
-                outboxRepo.updateStatusById(
-                        eventId,
-                        OutboxStatus.FAILED,
-                        LocalDateTime.now()
-                );
-            }
+    private void handleEvent(OutboxEvent event) {
+        UUID eventId = event.getId();
+        try {
+            publishToKafka(event);
+            updateEventStatus(eventId, OutboxStatus.PUBLISHED);
+            logSuccess(event);
+        } catch (Exception ex) {
+            updateEventStatus(eventId, OutboxStatus.FAILED);
+            logFailure(eventId, ex);
         }
+    }
+
+    private void publishToKafka(OutboxEvent event) throws Exception {
+        kafkaTemplate.send(
+                event.getEventType().toLowerCase(), // topic
+                event.getAggregateId(),             // key
+                event.getPayload()                  // payload
+        ).get(); // block for sync delivery
+    }
+
+    private void updateEventStatus(UUID eventId, OutboxStatus status) {
+        outboxRepo.updateStatusById(eventId, status, LocalDateTime.now());
+    }
+
+    private void logSuccess(OutboxEvent event) {
+        log.info("Published OutboxEvent {} → Kafka topic '{}'",
+                event.getId(), event.getEventType());
+    }
+
+    private void logFailure(UUID eventId, Exception ex) {
+        log.error("Failed to publish OutboxEvent {}: {}", eventId, ex.getMessage());
     }
 }

@@ -10,7 +10,7 @@
 
     <parent>
         <groupId>com.transitflow</groupId>
-        <artifactId>transitflow-parent</artifactId>
+        <artifactId>transitflow</artifactId>
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
