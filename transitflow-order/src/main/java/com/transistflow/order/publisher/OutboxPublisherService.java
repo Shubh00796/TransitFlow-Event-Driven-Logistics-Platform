@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class OutboxPublisherService {
 
     private final OutboxEventRepository outboxRepo;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Scheduled(fixedDelay = 3000)
     @Transactional

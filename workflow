@@ -94,3 +94,6 @@ chmod +x transitflow-inventory/wait-for-mysql.sh
 chmod +x transitflow-dispatch/wait-for-mysql.sh
 chmod +x transitflow-delivery/wait-for-mysql.sh
 
+
+//🚀 That’s the standard production dev loop used by experienced teams!
+mvn clean package -DskipTests && docker compose up -d --build

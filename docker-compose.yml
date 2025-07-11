@@ -31,7 +31,7 @@ services:
 
   # ─── Kafka ────────────────────────────────────────────────────────────────
   kafka:
-    image: confluentinc/cp-kafka:7.5.0       # match ZK version!
+    image: confluentinc/cp-kafka:7.5.0
     restart: unless-stopped
     depends_on:
       zookeeper:
@@ -41,15 +41,12 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-
-      # bind on all interfaces
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      # what other containers use
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      # protocol mapping
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     healthcheck:
       test: ["CMD", "bash", "-c", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
       interval: 10s
