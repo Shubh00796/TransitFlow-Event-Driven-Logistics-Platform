@@ -26,5 +26,6 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
     @Query("DELETE FROM OutboxEvent e WHERE e.status = :status AND e.createdAt < :cutoff")
     void deleteByStatusAndCreatedAtBefore(@Param("status") OutboxStatus status, @Param("cutoff") LocalDateTime cutoff);
 
-  
+    // idempotency guard: has this aggregateId & eventType been recorded?
+    boolean existsByAggregateIdAndType(String aggregateId, String type);
 }
