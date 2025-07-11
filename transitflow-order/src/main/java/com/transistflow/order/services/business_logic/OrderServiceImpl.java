@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public OrderResponseDto createOrder(OrderRequestDto request) {
         validationUtil.validateCreateOrder(request);
         OrderEntity orderEntity = mapper.toEntity(request);
