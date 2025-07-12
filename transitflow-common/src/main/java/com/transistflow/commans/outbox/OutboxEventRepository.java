@@ -1,7 +1,6 @@
-package com.transistflow.order.reposiotries;
+package com.transistflow.commans.outbox;
 
 import com.transistflow.commans.enmus.OutboxStatus;
-import com.transistflow.order.domain.OutboxEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,5 +26,5 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
     void deleteByStatusAndCreatedAtBefore(@Param("status") OutboxStatus status, @Param("cutoff") LocalDateTime cutoff);
 
     // idempotency guard: has this aggregateId & eventType been recorded?
-    boolean existsByAggregateIdAndType(String aggregateId, String type);
+    boolean existsByAggregateIdAndAggregateType(String aggregateId, String aggregateType);
 }

@@ -1,13 +1,11 @@
-package com.transistflow.Inventory.reposiotries;
+package com.transistflow.Inventory.repositories;
 
 
 import com.transistflow.Inventory.domain.InventoryItemEntity;
 import com.transistflow.Inventory.domain.InventoryItemId;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface InventoryItemRepository extends JpaRepository<InventoryItemEntity, InventoryItemId> {

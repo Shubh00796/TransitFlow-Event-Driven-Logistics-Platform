@@ -2,13 +2,13 @@ package com.transistflow.Inventory.services;
 
 import com.transistflow.Inventory.domain.InventoryItemEntity;
 import com.transistflow.Inventory.mappers.InventoryItemMapper;
-import com.transistflow.Inventory.reposiotries.InventoryItemRepoService;
+import com.transistflow.Inventory.repositories.InventoryItemRepoService;
 import com.transistflow.commans.dtos.inventory.InventoryItemDto;
 import com.transistflow.commans.events.InventoryUpdateFailedEvent;
 import com.transistflow.commans.events.OrderCreatedEvent;
 import com.transistflow.commans.events.OrderItemPayload;
-import com.transistflow.order.reposiotries.OutboxEventRepository;
-import com.transistflow.order.utils.OutboxEventFactoryUtil;
+import com.transistflow.commans.outbox.OutboxEventFactoryUtil;
+import com.transistflow.commans.outbox.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         // idempotency guard
         boolean duplicate = outboxRepo
-                .existsByAggregateIdAndType(orderId.toString(), "ORDER_CREATED");
+                .existsByAggregateIdAndAggregateType(orderId.toString(), "ORDER_CREATED");
         if (duplicate) {
             log.info("⏭️ Skipping duplicate OrderCreatedEvent for orderId={}", orderId);
             return;

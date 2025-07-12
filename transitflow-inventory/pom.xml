@@ -22,6 +22,7 @@
             <groupId>com.transitflow</groupId>
             <artifactId>transitflow-common</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>

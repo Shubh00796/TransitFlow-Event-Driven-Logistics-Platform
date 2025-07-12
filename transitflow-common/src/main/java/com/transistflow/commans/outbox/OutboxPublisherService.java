@@ -1,11 +1,11 @@
-package com.transistflow.order.publisher;
+package com.transistflow.commans.outbox;
 
 import com.transistflow.commans.enmus.OutboxStatus;
-import com.transistflow.order.domain.OutboxEvent;
-import com.transistflow.order.reposiotries.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,4 +61,7 @@ public class OutboxPublisherService {
     private void logFailure(UUID eventId, Exception ex) {
         log.error("Failed to publish OutboxEvent {}: {}", eventId, ex.getMessage());
     }
+
+
+
 }

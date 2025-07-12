@@ -1,4 +1,4 @@
-package com.transistflow.Inventory.reposiotries;
+package com.transistflow.Inventory.repositories;
 
 
 import com.transistflow.Inventory.domain.InventoryItemEntity;
