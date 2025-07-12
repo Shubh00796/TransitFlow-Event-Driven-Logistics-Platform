@@ -1,14 +1,47 @@
-# TransitFlow-Event-Driven-Logistics-Platform
-EDA-Based Logistics Platform Backend Architecture with Kafka and Spring Boot
+TransitFlow ­– Event­Driven Logistics Platform
 
+Table of Contents 1. Overview 2. Architecture 3. Features 4. Tech Stack 5. Prerequisites 6. Getting Started 7. Docker & Docker Compose 8. API Reference 9. Testing 10. CI/CD 11. Deployment 12. Monitoring & Logging 13. Contributing 14. License 15. Contact
 
-Overview: TransitFlow is a backend-only system for coordinating shipment orders, inventory, dispatch and delivery in a logistics context. It uses an event-driven architecture (EDA): key actions (like “OrderPlaced”, “InventoryReserved”, “ShipmentDispatched”) are represented as events that services publish to Kafka topics and other services consume asynchronously
-confluent.io
-devcenter.heroku.com
-. This decoupling lets each component evolve and scale independently. TransitFlow’s goals include real-time coordination of orders, stock and vehicles, high scalability, and a clean modular design. Key features include:
-Order Processing: Accept new shipment orders (origin, destination, items) and persist them. Publish an OrderCreated event.
-Inventory Management: Listen for OrderCreated events, reserve stock for the order (update the inventory_items table), then publish InventoryReserved or InventoryOutOfStock.
-Dispatch Coordination: Consume InventoryReserved events, allocate a vehicle/driver based on capacity and location, record a shipment record, and publish ShipmentDispatched.
-Delivery Tracking: Consume ShipmentDispatched and update shipment status. On completion, emit ShipmentDelivered.
-Analytics: Process event streams (e.g. with a separate service) to compute metrics like average delivery time.
-Each of these flows is implemented as a separate microservice (or module) so that communications occur only via Kafka events. This illustrates core EDA skills (publish/subscribe, asynchronous handling, event modeling) in a realistic logistics domain.
+⸻
+
+Overview
+
+TransitFlow is a modular, event-driven logistics platform built with Spring Boot and Kafka. It simulates a typical delivery pipeline: 1. Order Service accepts and validates customer orders. 2. Inventory Service reserves stock. 3. Dispatch Service arranges shipment and generates tracking. 4. Delivery Service updates delivery status and proof-of-delivery. 5. Analytics Service aggregates events for reporting and KPIs.
+
+flowchart LR subgraph Event Bus K(Kafka Cluster) end
+
+subgraph Services OS[Order Service] IS[Inventory Service] DS[Dispatch Service] DelS[Delivery Service] AS[Analytics Service] end
+
+OS -- OrderCreated --> K K -- InventoryReserved --> IS IS -- ReservationConfirmed --> K K -- ShipmentDispatched --> DS DS -- DispatchConfirmed --> K K -- ShipmentDelivered --> DelS DelS -- DeliveryConfirmed --> K K -- * --> AS
+
+OS -->|PostgreSQL| PG1[(Orders DB)] IS -->|PostgreSQL| PG2[(Inventory DB)] DS -->|PostgreSQL| PG3[(Dispatch DB)] DelS -->|PostgreSQL| PG4[(Delivery DB)] AS -->|MongoDB| MG[(Analytics DB)]
+
+Features • Event-Driven: Loose coupling via Kafka topics • Microservices: Independently deployable Spring Boot modules • Persistence: Each service has its own PostgreSQL schema • Observability: Prometheus + Grafana metrics (see Monitoring & Logging) • Authentication: JWT-based auth on API gateway (if extended) • Resilience: Retry, dead-letter topics, circuit breakers (Hystrix/Resilience4j)
+
+Tech Stack
+
+Layer Technology Language Java 17 Framework Spring Boot (Spring Cloud) Messaging Apache Kafka Databases PostgreSQL, MongoDB Containerization Docker, Docker Compose CI/CD GitHub Actions Monitoring Prometheus, Grafana Testing JUnit, Mockito, Testcontainers Infra as Code (Optional) Terraform
+
+Prerequisites • Java 17+ SDK • Docker & Docker Compose • (Local) Kafka & Zookeeper, or a running Kafka cluster • Maven 3.6+
+
+Getting Started 1. Clone the repo
+
+git clone https://github.com/Shubh00796/TransitFlow-Event-Driven-Logistics-Platform.git cd TransitFlow-Event-Driven-Logistics-Platform
+
+mvn clean install
+
+docker-compose up -d zookeeper kafka
+
+From project root
+
+./run-services.sh
+
+Docker & Docker Compose
+
+All services can be spun up via Docker Compose:
+
+version: '3.8' services: zookeeper: image: bitnami/zookeeper:latest ... kafka: image: bitnami/kafka:latest ... orders: build: ./order-service ports: ["8081:8080"] depends_on: [kafka] inventory: build: ./inventory-service ports: ["8082:8080"] depends_on: [kafka]
+
+... dispatch, delivery, analytics
+
+http://localhost:8081/swagger-ui.html
