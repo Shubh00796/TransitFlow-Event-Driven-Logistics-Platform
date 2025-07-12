@@ -48,10 +48,12 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     healthcheck:
-      test: ["CMD", "bash", "-c", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
+      test: ["CMD-SHELL", "nc -z kafka 9092 || exit 1"]
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 10
+
+
 
   # ─── Kafka UI ─────────────────────────────────────────────────────────────
   kafka-ui:

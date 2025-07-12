@@ -1,10 +1,8 @@
-package com.transistflow.order.utils;
+package com.transistflow.commans.outbox;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.transistflow.commans.enmus.OutboxStatus;
-import com.transistflow.commans.events.OrderItemPayload;
-import com.transistflow.order.domain.OutboxEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
