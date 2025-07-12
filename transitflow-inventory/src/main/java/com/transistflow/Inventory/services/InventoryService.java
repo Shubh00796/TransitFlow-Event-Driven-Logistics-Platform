@@ -4,7 +4,6 @@ package com.transistflow.Inventory.services;
 import com.transistflow.commans.dtos.inventory.InventoryItemDto;
 import com.transistflow.commans.events.OrderCreatedEvent;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface InventoryService {
@@ -17,7 +16,7 @@ public interface InventoryService {
     /**
      * Create or add a new inventory item.
      */
-    void addInventoryItem(InventoryItemDto dto);
+    InventoryItemDto addInventoryItem(InventoryItemDto dto);
 
     /**
      * Update inventory quantity for a specific product in a warehouse.

@@ -34,7 +34,7 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     @Transactional
     public void processOrderCreatedEvent(OrderCreatedEvent event) {
-        Long orderId     = event.getOrderId();
+        Long orderId = event.getOrderId();
         Long warehouseId = event.getWarehouseId();
 
         // idempotency guard
@@ -112,7 +112,7 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     @Transactional
-    public void addInventoryItem(InventoryItemDto dto) {
+    public InventoryItemDto addInventoryItem(InventoryItemDto dto) {
         if (inventoryRepoService.exists(dto.getWarehouseId(), dto.getProductId())) {
             throw new IllegalStateException("Item already exists in inventory");
         }
@@ -124,6 +124,7 @@ public class InventoryServiceImpl implements InventoryService {
                 "✅ Inventory item added: warehouseId={}, productId={}",
                 dto.getWarehouseId(), dto.getProductId()
         );
+        return mapper.toDto(entity);
     }
 
     @Override

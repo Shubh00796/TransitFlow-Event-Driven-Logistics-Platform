@@ -21,14 +21,11 @@ public class InventoryKafkaConfig {
 
     private final ProducerFactory<String, Object> producerFactory;
     private final ConsumerFactory<String, Object> genericConsumerFactory;
-    private final PlatformTransactionManager jpaTxManager;
 
     public InventoryKafkaConfig(ProducerFactory<String, Object> producerFactory,
-                                ConsumerFactory<String, Object> genericConsumerFactory,
-                                PlatformTransactionManager jpaTxManager) {
+                                ConsumerFactory<String, Object> genericConsumerFactory) {
         this.producerFactory = producerFactory;
         this.genericConsumerFactory = genericConsumerFactory;
-        this.jpaTxManager = jpaTxManager;
     }
 
     @Bean
@@ -37,32 +34,30 @@ public class InventoryKafkaConfig {
     }
 
     @Bean
-    public ChainedTransactionManager inventoryChainedTxManager() {
-        return new ChainedTransactionManager(kafkaTxManager(), jpaTxManager);
-    }
-
-    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderCreatedEvent>
     inventoryKafkaListenerContainerFactory() {
 
-        JsonDeserializer<OrderCreatedEvent> deserializer = new JsonDeserializer<>(OrderCreatedEvent.class);
+        JsonDeserializer<OrderCreatedEvent> deserializer =
+                new JsonDeserializer<>(OrderCreatedEvent.class);
         deserializer.addTrustedPackages("com.transistflow.commans.events");
 
-        ConsumerFactory<String, OrderCreatedEvent> cf = new DefaultKafkaConsumerFactory<>(
-                genericConsumerFactory.getConfigurationProperties(),
-                new StringDeserializer(),
-                deserializer
-        );
+        ConsumerFactory<String, OrderCreatedEvent> cf =
+                new DefaultKafkaConsumerFactory<>(
+                        genericConsumerFactory.getConfigurationProperties(),
+                        new StringDeserializer(),
+                        deserializer
+                );
 
         ConcurrentKafkaListenerContainerFactory<String, OrderCreatedEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(cf);
 
-        // Correct non-deprecated transaction manager setup
-        factory.setTransactionManager(inventoryChainedTxManager());
+        factory.getContainerProperties()
+                .setKafkaAwareTransactionManager(kafkaTxManager());
 
-        // Optional: for better batching semantics
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
+
+        factory.getContainerProperties()
+                .setAckMode(ContainerProperties.AckMode.BATCH);
 
         return factory;
     }
