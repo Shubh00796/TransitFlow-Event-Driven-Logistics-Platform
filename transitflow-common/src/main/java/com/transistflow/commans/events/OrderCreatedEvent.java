@@ -1,16 +1,18 @@
 package com.transistflow.commans.events;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderCreatedEvent {
     private Long orderId;
     private Long customerId;

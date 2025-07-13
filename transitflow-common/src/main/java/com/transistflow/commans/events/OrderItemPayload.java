@@ -1,9 +1,15 @@
 package com.transistflow.commans.events;
 
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderItemPayload {
     private Long productId;
     private Integer quantity;

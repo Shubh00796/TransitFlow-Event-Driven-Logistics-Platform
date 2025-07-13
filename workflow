@@ -97,3 +97,19 @@ chmod +x transitflow-delivery/wait-for-mysql.sh
 
 //🚀 That’s the standard production dev loop used by experienced teams!
 mvn clean package -DskipTests && docker compose up -d --build
+
+
+
+sequenceDiagram
+  participant User
+  participant OrderService
+  participant OutboxTable
+  participant Kafka
+  participant InventoryService
+
+  User->>OrderService: Create Order API
+  OrderService->>OutboxTable: Save OrderCreatedEvent (PENDING)
+  OrderService->>Kafka: OutboxPublisher publishes event
+  Kafka->>Kafka UI: Topic + Partition appear
+  Kafka->>InventoryService: Delivers OrderCreatedEvent
+  InventoryService->>InventoryDB: Update stock

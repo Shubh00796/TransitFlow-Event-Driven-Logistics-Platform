@@ -23,7 +23,7 @@ public class OrderCreatedEventConsumer {
     @KafkaListener(
             topics = "ordercreatedevent",
             groupId = "inventory-group",
-            containerFactory = "inventoryKafkaListenerContainerFactory"
+            containerFactory = "orderCreatedEventKafkaListenerContainerFactory"
     )
     public void onOrderCreated(@Payload OrderCreatedEvent event) {
         log.info("📥 Received OrderCreatedEvent: orderId={} items={}",

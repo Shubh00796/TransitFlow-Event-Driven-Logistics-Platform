@@ -2,9 +2,11 @@ package com.transistflow.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
@@ -14,14 +16,22 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * JPA auditing, and scheduling.
  */
 
-@SpringBootApplication
+
 @EnableCaching
 @EnableTransactionManagement
 @EnableJpaAuditing
 @EnableScheduling
-@ComponentScan({
-        "com.transistflow.order",              // your service code
-        "com.transistflow.commans.configs"     // your shared KafkaConfig
+@SpringBootApplication(scanBasePackages = {
+        "com.transistflow.order",
+        "com.transistflow.commans"
+})
+@EntityScan(basePackages = {
+        "com.transistflow.order.domain",
+        "com.transistflow.commans.outbox"   // 🔥 include all entity packages
+})
+@EnableJpaRepositories(basePackages = {
+        "com.transistflow.order.reposiotries",
+        "com.transistflow.commans.outbox"
 })
 public class OrderApplication {
     public static void main(String[] args) {

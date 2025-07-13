@@ -1,6 +1,8 @@
 package com.transistflow.commans.outbox;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.transistflow.commans.enmus.OutboxStatus;
+import com.transistflow.commans.events.OrderCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -42,12 +44,22 @@ public class OutboxPublisherService {
     }
 
     private void publishToKafka(OutboxEvent event) throws Exception {
-        kafkaTemplate.send(
-                event.getEventType().toLowerCase(), // topic
-                event.getAggregateId(),             // key
-                event.getPayload()                  // payload
-        ).get(); // block for sync delivery
+        String topic = event.getEventType().toLowerCase();
+        String key = event.getAggregateId();
+        String payload = event.getPayload();
+
+        Object payloadObj = resolvePayload(topic, payload); // Deserialize
+
+        kafkaTemplate.send(topic, key, payloadObj).get();
     }
+    private Object resolvePayload(String topic, String json) throws Exception {
+        if (topic.equals("ordercreatedevent") || topic.equals("order")) {
+            return new ObjectMapper().readValue(json, OrderCreatedEvent.class);
+        }
+        throw new IllegalArgumentException("Unsupported topic: " + topic);
+    }
+
+
 
     private void updateEventStatus(UUID eventId, OutboxStatus status) {
         outboxRepo.updateStatusById(eventId, status, LocalDateTime.now());
