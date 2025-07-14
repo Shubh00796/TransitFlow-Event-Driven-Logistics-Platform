@@ -1,6 +1,6 @@
 package com.transitflow.order.services;
 
-import com.transistflow.commans.dtos.order.OrderItemDto;
+import com.transitflow.common.dtos.order.OrderItemDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

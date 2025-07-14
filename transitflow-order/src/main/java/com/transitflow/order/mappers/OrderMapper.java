@@ -1,11 +1,11 @@
 package com.transitflow.order.mappers;
 
-import com.transistflow.commans.dtos.order.OrderItemDto;
-import com.transistflow.commans.dtos.order.OrderRequestDto;
-import com.transistflow.commans.dtos.order.OrderResponseDto;
-import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
-import com.transistflow.commans.events.OrderCreatedEvent;
-import com.transistflow.commans.events.OrderItemPayload;
+import com.transitflow.common.dtos.order.OrderItemDto;
+import com.transitflow.common.dtos.order.OrderRequestDto;
+import com.transitflow.common.dtos.order.OrderResponseDto;
+import com.transitflow.common.dtos.order.OrderUpdateRequestDto;
+import com.transitflow.common.events.OrderCreatedEvent;
+import com.transitflow.common.events.OrderItemPayload;
 import com.transitflow.order.domain.OrderEntity;
 import org.mapstruct.*;
 

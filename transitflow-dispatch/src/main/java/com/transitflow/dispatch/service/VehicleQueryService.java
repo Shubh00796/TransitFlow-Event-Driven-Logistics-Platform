@@ -1,9 +1,9 @@
 package com.transitflow.dispatch.service;
 
 
-import com.transistflow.commans.dtos.disptach.VehicleDto;
-import com.transistflow.commans.enmus.VehicleStatus;
-import com.transistflow.commans.enmus.VehicleType;
+import com.transitflow.common.dtos.disptach.VehicleDto;
+import com.transitflow.common.enmus.VehicleStatus;
+import com.transitflow.common.enmus.VehicleType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

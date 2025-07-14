@@ -1,9 +1,9 @@
 package com.transitflow.dispatch.mappers;
 
 
-import com.transistflow.commans.dtos.disptach.ShipmentRequestDto;
-import com.transistflow.commans.dtos.disptach.ShipmentResponseDto;
-import com.transistflow.commans.dtos.disptach.VehicleDto;
+import com.transitflow.common.dtos.disptach.ShipmentRequestDto;
+import com.transitflow.common.dtos.disptach.ShipmentResponseDto;
+import com.transitflow.common.dtos.disptach.VehicleDto;
 import com.transitflow.dispatch.domain.Shipment;
 import com.transitflow.dispatch.domain.Vehicle;
 import org.mapstruct.Mapper;

@@ -2,8 +2,8 @@ package com.transitflow.dispatch.domain;
 
 
 
-import com.transistflow.commans.enmus.VehicleStatus;
-import com.transistflow.commans.enmus.VehicleType;
+import com.transitflow.common.enmus.VehicleStatus;
+import com.transitflow.common.enmus.VehicleType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;

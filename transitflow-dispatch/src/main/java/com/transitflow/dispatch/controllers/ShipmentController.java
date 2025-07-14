@@ -1,10 +1,10 @@
 package com.transitflow.dispatch.controllers;
 
 
-import com.transistflow.commans.dtos.ApiResponse;
-import com.transistflow.commans.dtos.disptach.ShipmentRequestDto;
-import com.transistflow.commans.dtos.disptach.ShipmentResponseDto;
-import com.transistflow.commans.enmus.ShipmentStatus;
+import com.transitflow.common.dtos.ApiResponse;
+import com.transitflow.common.dtos.disptach.ShipmentRequestDto;
+import com.transitflow.common.dtos.disptach.ShipmentResponseDto;
+import com.transitflow.common.enmus.ShipmentStatus;
 import com.transitflow.dispatch.service.ShipmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

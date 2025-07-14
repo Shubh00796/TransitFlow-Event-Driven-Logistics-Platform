@@ -1,7 +1,7 @@
 package com.transitflow.order.reposiotries.data_access;
 
 
-import com.transistflow.commans.exceptions.ResourceNotFoundException;
+import com.transitflow.common.exceptions.ResourceNotFoundException;
 import com.transitflow.order.domain.OrderItemEntity;
 import com.transitflow.order.reposiotries.OrderItemRepository;
 import lombok.RequiredArgsConstructor;

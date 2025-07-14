@@ -2,7 +2,7 @@ package com.transistflow.Inventory.repositories;
 
 
 import com.transistflow.Inventory.domain.InventoryItemEntity;
-import com.transistflow.commans.exceptions.ResourceNotFoundException;
+import com.transitflow.common.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

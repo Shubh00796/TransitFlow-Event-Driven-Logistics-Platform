@@ -1,7 +1,7 @@
 package com.transitflow.order.controllers;
 
-import com.transistflow.commans.dtos.ApiResponse;
-import com.transistflow.commans.dtos.order.OrderItemDto;
+import com.transitflow.common.dtos.ApiResponse;
+import com.transitflow.common.dtos.order.OrderItemDto;
 import com.transitflow.order.services.OrderItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

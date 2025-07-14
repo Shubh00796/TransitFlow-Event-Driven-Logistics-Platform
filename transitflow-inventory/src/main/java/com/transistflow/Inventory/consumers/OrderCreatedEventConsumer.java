@@ -2,7 +2,7 @@ package com.transistflow.Inventory.consumers;
 
 
 import com.transistflow.Inventory.services.InventoryService;
-import com.transistflow.commans.events.OrderCreatedEvent;
+import com.transitflow.common.events.OrderCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

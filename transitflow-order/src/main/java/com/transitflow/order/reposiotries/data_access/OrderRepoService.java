@@ -1,8 +1,8 @@
 package com.transitflow.order.reposiotries.data_access;
 
 
-import com.transistflow.commans.enmus.OrderStatus;
-import com.transistflow.commans.exceptions.ResourceNotFoundException;
+import com.transitflow.common.enmus.OrderStatus;
+import com.transitflow.common.exceptions.ResourceNotFoundException;
 import com.transitflow.order.domain.OrderEntity;
 import com.transitflow.order.reposiotries.OrderRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.transitflow.order.services.business_logic;
 
-import com.transistflow.commans.dtos.order.OrderItemDto;
+import com.transitflow.common.dtos.order.OrderItemDto;
 import com.transitflow.order.domain.OrderItemEntity;
 import com.transitflow.order.mappers.OrderItemMapper;
 import com.transitflow.order.reposiotries.data_access.OrderItemRepoService;

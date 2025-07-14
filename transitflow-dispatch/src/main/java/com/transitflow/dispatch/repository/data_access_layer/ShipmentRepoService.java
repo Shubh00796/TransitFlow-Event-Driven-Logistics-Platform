@@ -1,8 +1,8 @@
 package com.transitflow.dispatch.repository.data_access_layer;
 
 
-import com.transistflow.commans.enmus.ShipmentStatus;
-import com.transistflow.commans.exceptions.ResourceNotFoundException;
+import com.transitflow.common.enmus.ShipmentStatus;
+import com.transitflow.common.exceptions.ResourceNotFoundException;
 import com.transitflow.dispatch.domain.Shipment;
 import com.transitflow.dispatch.repository.ShipmentRepository;
 import lombok.RequiredArgsConstructor;

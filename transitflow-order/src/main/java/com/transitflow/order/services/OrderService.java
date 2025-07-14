@@ -1,9 +1,9 @@
 package com.transitflow.order.services;
 
 
-import com.transistflow.commans.dtos.order.OrderRequestDto;
-import com.transistflow.commans.dtos.order.OrderResponseDto;
-import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
+import com.transitflow.common.dtos.order.OrderRequestDto;
+import com.transitflow.common.dtos.order.OrderResponseDto;
+import com.transitflow.common.dtos.order.OrderUpdateRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

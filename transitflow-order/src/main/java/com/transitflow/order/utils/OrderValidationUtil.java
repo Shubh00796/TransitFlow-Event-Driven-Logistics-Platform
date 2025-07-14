@@ -1,9 +1,9 @@
 package com.transitflow.order.utils;
 
 
-import com.transistflow.commans.dtos.order.OrderItemDto;
-import com.transistflow.commans.dtos.order.OrderRequestDto;
-import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
+import com.transitflow.common.dtos.order.OrderItemDto;
+import com.transitflow.common.dtos.order.OrderRequestDto;
+import com.transitflow.common.dtos.order.OrderUpdateRequestDto;
 import com.transitflow.order.reposiotries.data_access.OrderItemRepoService;
 import com.transitflow.order.reposiotries.data_access.OrderRepoService;
 import jakarta.validation.ConstraintViolation;

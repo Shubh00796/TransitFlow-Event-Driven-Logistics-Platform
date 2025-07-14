@@ -1,15 +1,13 @@
 package com.transistflow.Inventory.controllers;
 
 import com.transistflow.Inventory.services.InventoryService;
-import com.transistflow.commans.dtos.ApiResponse;
-import com.transistflow.commans.dtos.inventory.InventoryItemDto;
-import com.transistflow.commans.exceptions.ResourceNotFoundException;
+import com.transitflow.common.dtos.ApiResponse;
+import com.transitflow.common.dtos.inventory.InventoryItemDto;
+import com.transitflow.common.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventory")

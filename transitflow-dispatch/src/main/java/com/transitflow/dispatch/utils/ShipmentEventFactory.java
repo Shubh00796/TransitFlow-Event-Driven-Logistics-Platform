@@ -1,7 +1,7 @@
 package com.transitflow.dispatch.utils;
 
 
-import com.transistflow.commans.events.ShipmentDispatchedEvent;
+import com.transitflow.common.events.ShipmentDispatchedEvent;
 import com.transitflow.dispatch.domain.Shipment;
 import org.springframework.stereotype.Component;
 

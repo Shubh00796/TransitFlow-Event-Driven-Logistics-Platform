@@ -2,8 +2,8 @@ package com.transitflow.dispatch.repository;
 
 
 import com.transitflow.dispatch.domain.Vehicle;
-import com.transistflow.commans.enmus.VehicleStatus;
-import com.transistflow.commans.enmus.VehicleType;
+import com.transitflow.common.enmus.VehicleStatus;
+import com.transitflow.common.enmus.VehicleType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;

@@ -1,9 +1,9 @@
 package com.transitflow.dispatch.service;
 
 
-import com.transistflow.commans.dtos.disptach.ShipmentRequestDto;
-import com.transistflow.commans.dtos.disptach.ShipmentResponseDto;
-import com.transistflow.commans.enmus.ShipmentStatus;
+import com.transitflow.common.dtos.disptach.ShipmentRequestDto;
+import com.transitflow.common.dtos.disptach.ShipmentResponseDto;
+import com.transitflow.common.enmus.ShipmentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -1,8 +1,8 @@
 package com.transistflow.Inventory.services;
 
 
-import com.transistflow.commans.dtos.inventory.InventoryItemDto;
-import com.transistflow.commans.events.OrderCreatedEvent;
+import com.transitflow.common.dtos.inventory.InventoryItemDto;
+import com.transitflow.common.events.OrderCreatedEvent;
 
 import java.util.Optional;
 

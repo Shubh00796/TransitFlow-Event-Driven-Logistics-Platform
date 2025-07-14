@@ -1,9 +1,9 @@
 package com.transitflow.dispatch.repository.data_access_layer;
 
 
-import com.transistflow.commans.enmus.VehicleStatus;
-import com.transistflow.commans.enmus.VehicleType;
-import com.transistflow.commans.exceptions.ResourceNotFoundException;
+import com.transitflow.common.enmus.VehicleStatus;
+import com.transitflow.common.enmus.VehicleType;
+import com.transitflow.common.exceptions.ResourceNotFoundException;
 import com.transitflow.dispatch.domain.Vehicle;
 import com.transitflow.dispatch.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;

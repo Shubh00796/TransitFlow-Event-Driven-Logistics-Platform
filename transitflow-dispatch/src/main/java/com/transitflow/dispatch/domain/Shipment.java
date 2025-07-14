@@ -1,7 +1,7 @@
 package com.transitflow.dispatch.domain;
 
 
-import com.transistflow.commans.enmus.ShipmentStatus;
+import com.transitflow.common.enmus.ShipmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

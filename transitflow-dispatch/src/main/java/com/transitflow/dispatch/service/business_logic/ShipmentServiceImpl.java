@@ -1,12 +1,10 @@
 package com.transitflow.dispatch.service.business_logic;
 
-import com.transistflow.commans.dtos.disptach.ShipmentRequestDto;
-import com.transistflow.commans.dtos.disptach.ShipmentResponseDto;
-import com.transistflow.commans.enmus.ShipmentStatus;
-import com.transistflow.commans.events.ShipmentDispatchedEvent;
-import com.transistflow.commans.outbox.DomainEventPublisher;
-import com.transistflow.commans.outbox.OutboxEventFactoryUtil;
-import com.transistflow.commans.outbox.OutboxEventRepository;
+import com.transitflow.common.dtos.disptach.ShipmentRequestDto;
+import com.transitflow.common.dtos.disptach.ShipmentResponseDto;
+import com.transitflow.common.enmus.ShipmentStatus;
+import com.transitflow.common.events.ShipmentDispatchedEvent;
+import com.transitflow.common.outbox.DomainEventPublisher;
 import com.transitflow.dispatch.domain.Shipment;
 import com.transitflow.dispatch.mappers.DispatchMapper;
 import com.transitflow.dispatch.repository.data_access_layer.ShipmentRepoService;
@@ -31,8 +29,7 @@ import java.util.stream.Stream;
 public class ShipmentServiceImpl implements ShipmentService {
     private final ShipmentRepoService shipmentRepoService;
     private final DispatchMapper mapper;
-    private final OutboxEventFactoryUtil outboxFactory;
-    private final OutboxEventRepository outboxRepo;
+
     private final DomainEventPublisher domainEventPublisher;
     private final ShipmentEventFactory shipmentEventFactory;
 

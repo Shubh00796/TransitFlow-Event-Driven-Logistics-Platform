@@ -1,6 +1,6 @@
 package com.transitflow.order.domain;
 
-import com.transistflow.commans.enmus.OrderStatus;
+import com.transitflow.common.enmus.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

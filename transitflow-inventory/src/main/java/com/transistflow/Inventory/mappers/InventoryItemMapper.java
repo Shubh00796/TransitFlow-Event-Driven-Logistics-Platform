@@ -2,7 +2,7 @@ package com.transistflow.Inventory.mappers;
 
 
 import com.transistflow.Inventory.domain.InventoryItemEntity;
-import com.transistflow.commans.dtos.inventory.InventoryItemDto;
+import com.transitflow.common.dtos.inventory.InventoryItemDto;
 import org.mapstruct.*;
 
 /**

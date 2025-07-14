@@ -1,7 +1,7 @@
 package com.transitflow.dispatch.repository;
 
 
-import com.transistflow.commans.enmus.ShipmentStatus;
+import com.transitflow.common.enmus.ShipmentStatus;
 import com.transitflow.dispatch.domain.Shipment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
