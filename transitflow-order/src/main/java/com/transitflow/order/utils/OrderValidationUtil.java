@@ -1,11 +1,11 @@
-package com.transistflow.order.utils;
+package com.transitflow.order.utils;
 
 
 import com.transistflow.commans.dtos.order.OrderItemDto;
 import com.transistflow.commans.dtos.order.OrderRequestDto;
 import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
-import com.transistflow.order.reposiotries.data_access.OrderItemRepoService;
-import com.transistflow.order.reposiotries.data_access.OrderRepoService;
+import com.transitflow.order.reposiotries.data_access.OrderItemRepoService;
+import com.transitflow.order.reposiotries.data_access.OrderRepoService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

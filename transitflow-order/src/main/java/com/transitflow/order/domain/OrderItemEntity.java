@@ -1,4 +1,4 @@
-package com.transistflow.order.domain;
+package com.transitflow.order.domain;
 
 
 import jakarta.persistence.*;

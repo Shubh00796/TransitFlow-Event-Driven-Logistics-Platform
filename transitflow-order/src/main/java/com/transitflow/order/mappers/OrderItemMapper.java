@@ -1,8 +1,8 @@
 // src/main/java/com/transistflow/order/mappers/OrderItemMapper.java
-package com.transistflow.order.mappers;
+package com.transitflow.order.mappers;
 
 import com.transistflow.commans.dtos.order.OrderItemDto;
-import com.transistflow.order.domain.OrderItemEntity;
+import com.transitflow.order.domain.OrderItemEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

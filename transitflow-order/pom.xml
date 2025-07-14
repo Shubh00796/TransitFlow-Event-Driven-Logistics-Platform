@@ -16,6 +16,7 @@
     </parent>
 
     <artifactId>transitflow-order</artifactId>
+    <packaging>jar</packaging> <!-- ✅ Correct location -->
 
     <dependencies>
         <dependency>
@@ -59,10 +60,6 @@
             <version>1.5.5.Final</version>
             <scope>provided</scope>
         </dependency>
-
-
-
-
     </dependencies>
 
     <build>
@@ -70,7 +67,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.3</version> <!-- Match your Spring Boot version -->
+                <version>3.5.3</version>
                 <executions>
                     <execution>
                         <goals>
@@ -81,7 +78,5 @@
             </plugin>
         </plugins>
     </build>
-    
-
 
 </project>

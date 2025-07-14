@@ -1,5 +1,4 @@
-package com.transistflow.order.configs;
-
+package com.transistflow.commans.configs;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

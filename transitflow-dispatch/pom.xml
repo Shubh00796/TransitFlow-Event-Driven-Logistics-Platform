@@ -64,15 +64,15 @@
         <dependency>
             <groupId>com.transitflow</groupId>
             <artifactId>transitflow-order</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.transitflow</groupId>
             <artifactId>transitflow-inventory</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
+
 
 
     </dependencies>

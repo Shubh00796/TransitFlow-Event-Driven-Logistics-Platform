@@ -1,10 +1,10 @@
-package com.transistflow.order.controllers;
+package com.transitflow.order.controllers;
 
 import com.transistflow.commans.dtos.ApiResponse;
 import com.transistflow.commans.dtos.order.OrderRequestDto;
 import com.transistflow.commans.dtos.order.OrderResponseDto;
 import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
-import com.transistflow.order.services.OrderService;
+import com.transitflow.order.services.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

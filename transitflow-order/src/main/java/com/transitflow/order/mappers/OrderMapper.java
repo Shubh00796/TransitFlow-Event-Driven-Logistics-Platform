@@ -1,4 +1,4 @@
-package com.transistflow.order.mappers;
+package com.transitflow.order.mappers;
 
 import com.transistflow.commans.dtos.order.OrderItemDto;
 import com.transistflow.commans.dtos.order.OrderRequestDto;
@@ -6,7 +6,7 @@ import com.transistflow.commans.dtos.order.OrderResponseDto;
 import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
 import com.transistflow.commans.events.OrderCreatedEvent;
 import com.transistflow.commans.events.OrderItemPayload;
-import com.transistflow.order.domain.OrderEntity;
+import com.transitflow.order.domain.OrderEntity;
 import org.mapstruct.*;
 
 import java.util.List;

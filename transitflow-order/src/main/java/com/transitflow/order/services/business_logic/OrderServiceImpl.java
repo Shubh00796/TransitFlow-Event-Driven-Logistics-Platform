@@ -1,4 +1,4 @@
-package com.transistflow.order.services.business_logic;
+package com.transitflow.order.services.business_logic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.transistflow.commans.dtos.order.OrderItemDto;
@@ -10,14 +10,14 @@ import com.transistflow.commans.events.OrderCancelledEvent;
 import com.transistflow.commans.events.OrderCreatedEvent;
 import com.transistflow.commans.events.OrderItemPayload;
 import com.transistflow.commans.events.OrderStatusChangedEvent;
-import com.transistflow.order.domain.OrderEntity;
+import com.transitflow.order.domain.OrderEntity;
 import com.transistflow.commans.outbox.OutboxEvent;
-import com.transistflow.order.mappers.OrderMapper;
+import com.transitflow.order.mappers.OrderMapper;
 import com.transistflow.commans.outbox.OutboxEventRepository;
-import com.transistflow.order.reposiotries.data_access.OrderRepoService;
-import com.transistflow.order.services.OrderItemService;
-import com.transistflow.order.services.OrderService;
-import com.transistflow.order.utils.OrderValidationUtil;
+import com.transitflow.order.reposiotries.data_access.OrderRepoService;
+import com.transitflow.order.services.OrderItemService;
+import com.transitflow.order.services.OrderService;
+import com.transitflow.order.utils.OrderValidationUtil;
 import com.transistflow.commans.outbox.OutboxEventFactoryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 

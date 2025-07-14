@@ -1,10 +1,10 @@
-package com.transistflow.order.reposiotries.data_access;
+package com.transitflow.order.reposiotries.data_access;
 
 
 import com.transistflow.commans.enmus.OrderStatus;
 import com.transistflow.commans.exceptions.ResourceNotFoundException;
-import com.transistflow.order.domain.OrderEntity;
-import com.transistflow.order.reposiotries.OrderRepository;
+import com.transitflow.order.domain.OrderEntity;
+import com.transitflow.order.reposiotries.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

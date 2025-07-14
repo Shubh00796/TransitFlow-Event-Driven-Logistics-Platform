@@ -1,4 +1,4 @@
-package com.transistflow.order.domain;
+package com.transitflow.order.domain;
 
 import com.transistflow.commans.enmus.OrderStatus;
 import jakarta.persistence.*;
