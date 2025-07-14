@@ -5,5 +5,4 @@ public enum VehicleType {
     TRUCK,
     TRAILER,
     BIKE
-    // add others as needed
 }
