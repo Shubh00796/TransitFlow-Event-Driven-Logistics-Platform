@@ -1,0 +1,79 @@
+🐳 Docker Commands for Daily Development
+📦 CONTAINERS
+Command	Description
+
+docker ps	List running containers
+docker ps -a	List all containers (stopped + running)
+docker start <container>	Start a stopped container
+docker stop <container>	Stop a running container
+docker restart <container>	Restart container
+docker rm <container>	Delete (remove) container
+docker logs <container>	View container logs
+docker exec -it <container> bash	Open shell inside container (like SSH)
+docker inspect <container>	Show detailed info (IP, mounts, env vars, etc.)
+docker top <container>	View processes running in container
+
+🧊 IMAGES
+Command	Description
+
+docker images	List all local Docker images
+docker rmi <image>	Remove a Docker image
+docker build -t my-app .	Build Docker image from Dockerfile
+docker pull <image>	Pull image from Docker Hub
+docker tag <image> user/repo:tag	Rename/tag an image
+
+📂 VOLUMES
+Command	Description
+docker volume ls	List all volumes
+docker volume inspect <volume>	Details about a volume
+docker volume rm <volume>	Delete a volume
+docker volume prune	Delete unused volumes (⚠️ useful cleanup)
+
+⚙️ SYSTEM & CLEANUP
+Command	Description
+docker system df	Show Docker disk usage (images, containers, volumes)
+docker system prune	🧹 Remove unused containers, networks, images (asks for confirmation)
+docker system prune -a	🧹⚠️ Remove everything not used, including all unused images
+docker builder prune	Remove old build cache
+
+🛠 BUILD & RUN (Manual)
+Command	Description
+docker run -d -p 8080:8080 my-app	Run container in background, map port
+docker run --rm -it my-app bash	Run container interactively, remove after exit
+docker build -t my-image-name .	Build Docker image using Dockerfile in current dir
+
+🧃 DOCKER COMPOSE
+Command	Description
+
+docker-compose up	Start all services (uses docker-compose.yml)
+docker-compose up -d	Start in detached mode (background)
+docker-compose down	Stop and remove containers/networks
+docker-compose down -v	⛔️ Also removes volumes (cleans DB, Kafka, etc.)
+docker-compose logs -f	Tail all logs live
+docker-compose restart <service>	Restart a specific service
+docker-compose build	Rebuild all services (after code change or Dockerfile edit)
+
+✅ Bonus: Helpful Aliases
+You can add these to your terminal (.bashrc, .zshrc, etc.):
+
+bash
+Copy
+Edit
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias dimg='docker images'
+alias dclean='docker system prune -a --volumes'
+alias dlog='docker-compose logs -f'
+alias dup='docker-compose up -d'
+alias ddown='docker-compose down -v'
+🧠 Pro Tips
+Use --rm in docker run to auto-delete after exit.
+
+Use .dockerignore to avoid copying unnecessary files during builds.
+
+Mount code during dev:
+
+bash
+Copy
+Edit
+docker run -v $(pwd):/app -p 8080:8080 my-image

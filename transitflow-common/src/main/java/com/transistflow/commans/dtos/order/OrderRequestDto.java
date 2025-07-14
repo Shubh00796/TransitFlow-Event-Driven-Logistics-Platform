@@ -16,6 +16,8 @@ public class OrderRequestDto {
     @NotBlank(message = "destination must not be blank")
     private String destination;
 
+
+
     @NotBlank(message = "origin must not be blank")
     private String origin;
     @NotNull(message = "status is required")

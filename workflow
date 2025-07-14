@@ -113,3 +113,27 @@ sequenceDiagram
   Kafka->>Kafka UI: Topic + Partition appear
   Kafka->>InventoryService: Delivers OrderCreatedEvent
   InventoryService->>InventoryDB: Update stock
+
+
+
+//docker comands to remove the unused imgaes
+docker system prune -a --volumes
+-a: remove all unused images (not just dangling)
+
+--volumes: remove unused volumes (e.g. Kafka data dirs)
+
+Step 2: Check What’s Eating Space
+bash
+Copy
+Edit
+docker system df
+
+
+docker-compose down -v
+This will:
+
+Stop all containers
+
+Remove all named/anonymous volumes
+
+💡 Good for dev — resets DB and Kafka clean.

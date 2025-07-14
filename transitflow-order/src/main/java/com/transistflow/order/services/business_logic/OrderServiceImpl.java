@@ -8,6 +8,7 @@ import com.transistflow.commans.dtos.order.OrderUpdateRequestDto;
 import com.transistflow.commans.enmus.OrderStatus;
 import com.transistflow.commans.events.OrderCancelledEvent;
 import com.transistflow.commans.events.OrderCreatedEvent;
+import com.transistflow.commans.events.OrderItemPayload;
 import com.transistflow.commans.events.OrderStatusChangedEvent;
 import com.transistflow.order.domain.OrderEntity;
 import com.transistflow.commans.outbox.OutboxEvent;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -49,22 +51,40 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponseDto createOrder(OrderRequestDto request) {
         validationUtil.validateCreateOrder(request);
+
+        // Save the order entity
         OrderEntity orderEntity = mapper.toEntity(request);
         OrderEntity savedOrder = repoService.save(orderEntity);
+
+        // Save order items
         saveOrderItemsUsingFK(request, savedOrder);
 
-        // ✅ Step 4: Publish event
-        OrderCreatedEvent createdEvent = mapper.toCreatedEvent(savedOrder);
-        OutboxEvent outboxEvent = outboxEventFactory.fromEvent(createdEvent, savedOrder.getId().toString(), "ORDER");
+        // 🔁 Reload the order from DB including items (if items are not in the savedOrder)
+        OrderEntity updatedOrder = repoService.findById(savedOrder.getId());
+
+        // ✅ Now map to event AFTER items are saved
+        List<OrderItemPayload> itemPayloads = request.getItems()
+                .stream()
+                .map(mapper::toPayload)
+                .toList();
+
+        OrderCreatedEvent createdEvent = mapper.toCreatedEvent(updatedOrder, itemPayloads);
+        createdEvent.setWarehouseId(resolveWarehouseId(updatedOrder));
+
+
+
+        // Save to outbox
+        OutboxEvent outboxEvent = outboxEventFactory.fromEvent(createdEvent, updatedOrder.getId().toString(), "ORDER");
         outboxRepo.save(outboxEvent);
 
-        // ✅ Step 5: Build response manually including items
-        OrderResponseDto response = mapper.toResponse(savedOrder);
-        List<OrderItemDto> items = orderItemService.getAllItemsByOrder(savedOrder.getId());
+        // Build response
+        OrderResponseDto response = mapper.toResponse(updatedOrder);
+        List<OrderItemDto> items = orderItemService.getAllItemsByOrder(updatedOrder.getId());
         response.setItems(items);
 
         return response;
     }
+
 
 
     private void saveOrderItemsUsingFK(OrderRequestDto request, OrderEntity savedOrder) {
@@ -184,6 +204,9 @@ public class OrderServiceImpl implements OrderService {
 
     private Stream<OrderResponseDto> mapStream(Stream<OrderEntity> stream) {
         return stream.map(mapper::toResponse);
+    }
+    private Long resolveWarehouseId(OrderEntity order) {
+        return 101L; // default warehouse for now
     }
 
 }

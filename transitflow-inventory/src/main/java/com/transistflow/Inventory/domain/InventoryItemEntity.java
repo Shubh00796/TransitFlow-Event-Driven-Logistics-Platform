@@ -1,7 +1,9 @@
 package com.transistflow.Inventory.domain;
 
-import com.transistflow.Inventory.domain.InventoryItemId;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.time.Instant;

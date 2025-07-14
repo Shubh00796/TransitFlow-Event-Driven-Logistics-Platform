@@ -47,6 +47,10 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_RETENTION_MS: 3600000       # 1 hour
+      KAFKA_LOG_SEGMENT_MS: 1800000         # roll segment every 30 mins
+      KAFKA_LOG_RETENTION_BYTES: 1073741824 # 1GB max
+
     healthcheck:
       test: ["CMD-SHELL", "nc -z kafka 9092 || exit 1"]
       interval: 10s
