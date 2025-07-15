@@ -38,7 +38,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final ShipmentEventFactory shipmentEventFactory;
 
     /**
-     * Creates and dispatches a new shipment and queues an outbox event.
+     * Creates and dispatches a new shipment and queues an outbox event
      *
      * @param request the shipment request DTO
      * @return the saved shipment response DTO
