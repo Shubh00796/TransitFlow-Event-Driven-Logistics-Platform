@@ -83,7 +83,7 @@ public class SharedKafkaConfig {
     }
 
 
-    // ✅ KafkaListener Factory for OrderCreatedEvent
+    // ✅ KafkaListener Factory for OrderCreatedEvent.
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderCreatedEvent> orderCreatedEventKafkaListenerContainerFactory(
             ConsumerFactory<String, OrderCreatedEvent> orderCreatedEventConsumerFactory
