@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.transitflow.common.enmus.OutboxStatus;
 import com.transitflow.common.events.OrderCreatedEvent;
 import com.transitflow.common.events.ShipmentDispatchedEvent;
+import com.transitflow.common.events.ShipmentDeliveredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -54,33 +55,32 @@ public class OutboxPublisherService {
             return true;
         });
     }
+
     private Object resolvePayload(String topic, String json) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
         switch (topic) {
             case "ordercreatedevent":
-                return new ObjectMapper().readValue(json, OrderCreatedEvent.class);
+                return mapper.readValue(json, OrderCreatedEvent.class);
             case "shipmentdispatchedevent":
-                return new ObjectMapper().readValue(json, ShipmentDispatchedEvent.class);
+                return mapper.readValue(json, ShipmentDispatchedEvent.class);
+            case "shipmentdeliveredevent":
+                return mapper.readValue(json, ShipmentDeliveredEvent.class);
             default:
                 throw new IllegalArgumentException("Unsupported topic: " + topic);
         }
     }
-
-
-
 
     private void updateEventStatus(UUID eventId, OutboxStatus status) {
         outboxRepo.updateStatusById(eventId, status, LocalDateTime.now());
     }
 
     private void logSuccess(OutboxEvent event) {
-        log.info("Published OutboxEvent {} → Kafka topic '{}'",
+        log.info("📤 Published OutboxEvent {} → Kafka topic '{}'",
                 event.getId(), event.getEventType());
     }
 
     private void logFailure(UUID eventId, Exception ex) {
-        log.error("Failed to publish OutboxEvent {}: {}", eventId, ex.getMessage());
+        log.error("❌ Failed to publish OutboxEvent {}: {}", eventId, ex.getMessage());
     }
-
-
-
 }

@@ -1,15 +1,14 @@
 package com.transitflow.delivery.service;
 
-
 import com.transitflow.common.dtos.delivery.ProofOfDeliveryDto;
 import com.transitflow.common.dtos.delivery.TrackingUpdateDto;
 import com.transitflow.common.enmus.ShipmentStatus;
-import com.transitflow.common.events.ShipmentDispatchedEvent;
 import com.transitflow.common.events.ShipmentDeliveredEvent;
+import com.transitflow.common.events.ShipmentDispatchedEvent;
 import com.transitflow.common.outbox.DomainEventPublisher;
 import com.transitflow.delivery.domain.ShipmentEvent;
+import com.transitflow.delivery.factories.DeliveryEventFactory;
 import com.transitflow.delivery.repository.ShipmentEventRepository;
-
 import com.transitflow.dispatch.domain.Shipment;
 import com.transitflow.dispatch.repository.data_access_layer.ShipmentRepoService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -36,159 +34,145 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryEventFactory deliveryEventFactory;
     private final TaskScheduler taskScheduler;
 
+    /**
+     * Handles shipment dispatch event.
+     * Updates shipment status to IN_TRANSIT, creates tracking event,
+     * and schedules automatic delivery simulation.
+     */
     @Override
     @Transactional
     public void handleShipmentDispatched(ShipmentDispatchedEvent event) {
-        log.info("Processing shipment dispatch event for shipment ID: {}", event.getShipmentId());
-
-        try {
-            // Update shipment status to IN_TRANSIT
-            Shipment shipment = shipmentRepoService.findById(event.getShipmentId());
-            shipment.setStatus(ShipmentStatus.);
-            shipmentRepoService.save(shipment);
-
-            // Create tracking event
-            createTrackingEvent(event.getShipmentId(), ShipmentStatus.IN_TRANSIT,
-                    createDispatchMetadata(event));
-
-            // Schedule automatic delivery simulation (e.g., 5 minutes delay)
-            scheduleDeliverySimulation(event.getShipmentId(), 5);
-
-            log.info("Successfully processed dispatch event for shipment: {}", event.getShipmentId());
-
-        } catch (Exception e) {
-            log.error("Failed to process dispatch event for shipment: {}", event.getShipmentId(), e);
-            throw e;
-        }
+        Shipment shipment = updateShipmentStatus(event.getShipmentId(), ShipmentStatus.IN_TRANSIT);
+        createTrackingEvent(shipment.getId(), ShipmentStatus.IN_TRANSIT, dispatchMetadata(event));
+        scheduleDeliverySimulation(shipment.getId(), 5);
     }
-
+    /**
+     * Simulates delivery for a shipment.
+     * Marks shipment as DELIVERED, logs tracking, and publishes delivery event.
+     */
     @Override
     @Transactional
     public void processDelivery(Long shipmentId) {
-        log.info("Processing delivery for shipment ID: {}", shipmentId);
+        Shipment shipment = fetchShipment(shipmentId);
+        if (isAlreadyDelivered(shipment)) return;
 
-        Shipment shipment = shipmentRepoService.findById(shipmentId);
-
-        // Check if already delivered
-        if (shipment.getStatus() == ShipmentStatus.DELIVERED) {
-            log.warn("Shipment {} is already delivered", shipmentId);
-            return;
-        }
-
-        // Mark as delivered
-        shipment.setStatus(ShipmentStatus.DELIVERED);
-        shipment.setDeliveredAt(Instant.now());
-        shipmentRepoService.save(shipment);
-
-        // Create delivery tracking event
-        createTrackingEvent(shipmentId, ShipmentStatus.DELIVERED,
-                createDeliveryMetadata(shipmentId));
-
-        // Publish delivery event
+        updateShipmentStatusAndTime(shipment, ShipmentStatus.DELIVERED, Instant.now());
+        createTrackingEvent(shipmentId, ShipmentStatus.DELIVERED, deliveryMetadata(shipmentId));
         publishDeliveryEvent(shipment);
-
-        log.info("Successfully processed delivery for shipment: {}", shipmentId);
     }
 
     @Override
     @Transactional
-    public void markAsDelivered(Long shipmentId, ProofOfDeliveryDto proofOfDelivery) {
-        log.info("Marking shipment {} as delivered with proof", shipmentId);
-
-        Shipment shipment = shipmentRepoService.findById(shipmentId);
-        shipment.setStatus(ShipmentStatus.DELIVERED);
-        shipment.setDeliveredAt(Instant.now());
-        shipmentRepoService.save(shipment);
-
-        // Create delivery tracking event with proof details
-        Map<String, Object> metadata = createProofOfDeliveryMetadata(proofOfDelivery);
-        createTrackingEvent(shipmentId, ShipmentStatus.DELIVERED, metadata);
-
-        // Publish delivery event
+    public void markAsDelivered(Long shipmentId, ProofOfDeliveryDto proof) {
+        Shipment shipment = updateShipmentStatusAndTime(fetchShipment(shipmentId), ShipmentStatus.DELIVERED, Instant.now());
+        createTrackingEvent(shipmentId, ShipmentStatus.DELIVERED, proofMetadata(proof));
         publishDeliveryEvent(shipment);
     }
 
+    /**
+     * Returns chronological tracking history of a shipment.
+     * Used for shipment tracking views or APIs.
+     */
     @Override
     public List<TrackingUpdateDto> getTrackingHistory(Long shipmentId) {
-        List<ShipmentEvent> events = shipmentEventRepository.findByShipmentIdOrderByOccurredAtAsc(shipmentId);
-
-        return events.stream()
+        return shipmentEventRepository.findByShipmentIdOrderByOccurredAtAsc(shipmentId)
+                .stream()
                 .map(this::mapToTrackingUpdate)
                 .toList();
     }
 
+    /**
+     * Creates a custom tracking event.
+     * Useful for manual or external shipment status updates.
+     */
     @Override
     @Transactional
     public void createTrackingUpdate(TrackingUpdateDto trackingUpdate) {
-        createTrackingEvent(trackingUpdate.getShipmentId(),
-                trackingUpdate.getEventType(),
-                trackingUpdate.getMetadata());
+        createTrackingEvent(trackingUpdate.getShipmentId(), trackingUpdate.getEventType(), trackingUpdate.getMetadata());
     }
 
+    /**
+     * Schedules delivery simulation after a delay.
+     * Automatically calls processDelivery at scheduled time.
+     */
     @Override
     public void scheduleDeliverySimulation(Long shipmentId, long delayInMinutes) {
-        log.info("Scheduling delivery simulation for shipment {} in {} minutes", shipmentId, delayInMinutes);
-
-        Instant deliveryTime = Instant.now().plus(Duration.ofMinutes(delayInMinutes));
-
-        ScheduledFuture<?> scheduledTask = taskScheduler.schedule(() -> {
-            try {
-                processDelivery(shipmentId);
-            } catch (Exception e) {
-                log.error("Failed to process scheduled delivery for shipment: {}", shipmentId, e);
-            }
-        }, deliveryTime);
-
-        log.info("Scheduled delivery simulation for shipment: {} at {}", shipmentId, deliveryTime);
+        Instant triggerTime = Instant.now().plus(Duration.ofMinutes(delayInMinutes));
+        taskScheduler.schedule(() -> processDelivery(shipmentId), triggerTime);
     }
 
-    // ========== PRIVATE HELPER METHODS ==========
+    // ============ PRIVATE HELPERS ============
 
-    private void createTrackingEvent(Long shipmentId, ShipmentStatus eventType, Map<String, Object> metadata) {
+    private Shipment fetchShipment(Long id) {
+        return shipmentRepoService.findById(id);
+    }
+
+    private Shipment updateShipmentStatus(Long shipmentId, ShipmentStatus status) {
+        Shipment shipment = fetchShipment(shipmentId);
+        shipment.setStatus(status);
+        return shipmentRepoService.save(shipment);
+    }
+
+    private Shipment updateShipmentStatusAndTime(Shipment shipment, ShipmentStatus status, Instant time) {
+        shipment.setStatus(status);
+        shipment.setDeliveredAt(time);
+        return shipmentRepoService.save(shipment);
+    }
+
+    private void createTrackingEvent(Long shipmentId, ShipmentStatus status, Map<String, Object> metadata) {
         ShipmentEvent event = ShipmentEvent.builder()
                 .shipmentId(shipmentId)
-                .eventType(eventType)
+                .eventType(status)
                 .occurredAt(Instant.now())
                 .build();
 
-        if (metadata != null && !metadata.isEmpty()) {
-            event.setMetadataMap(metadata);
-        }
+        event.setMetadataMap(metadata); // ✅ Manually set metadata using custom method
 
         shipmentEventRepository.save(event);
-        log.debug("Created tracking event: {} for shipment: {}", eventType, shipmentId);
     }
 
-    private Map<String, Object> createDispatchMetadata(ShipmentDispatchedEvent event) {
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put("vehicleId", event.getVehicleId());
-        metadata.put("dispatchedAt", event.getDispatchedAt());
-        metadata.put("estimatedDeliveryTime", calculateEstimatedDeliveryTime());
-        return metadata;
-    }
-
-    private Map<String, Object> createDeliveryMetadata(Long shipmentId) {
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put("deliveredAt", Instant.now());
-        metadata.put("deliveryMethod", "AUTOMATIC_SIMULATION");
-        metadata.put("location", "Customer Address");
-        return metadata;
-    }
-
-    private Map<String, Object> createProofOfDeliveryMetadata(ProofOfDeliveryDto proof) {
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put("deliveredAt", Instant.now());
-        metadata.put("deliveryMethod", "MANUAL_CONFIRMATION");
-        metadata.put("recipientName", proof.getRecipientName());
-        metadata.put("deliveryPhotoUrl", proof.getDeliveryPhotoUrl());
-        metadata.put("notes", proof.getNotes());
-        return metadata;
-    }
 
     private void publishDeliveryEvent(Shipment shipment) {
         ShipmentDeliveredEvent event = deliveryEventFactory.createShipmentDeliveredEvent(shipment);
         domainEventPublisher.publish(event, shipment.getId().toString(), "Shipment");
-        log.info("Published delivery event for shipment: {}", shipment.getId());
+    }
+
+    private boolean isAlreadyDelivered(Shipment shipment) {
+        return shipment.getStatus() == ShipmentStatus.DELIVERED;
+    }
+
+    // ============ METADATA HELPERS ============
+
+    private Map<String, Object> dispatchMetadata(ShipmentDispatchedEvent event) {
+        return buildMetadata(map -> {
+            map.put("vehicleId", event.getVehicleId());
+            map.put("dispatchedAt", event.getDispatchedAt());
+            map.put("estimatedDeliveryTime", Instant.now().plus(Duration.ofHours(2)).toString());
+        });
+    }
+
+    private Map<String, Object> deliveryMetadata(Long shipmentId) {
+        return buildMetadata(map -> {
+            map.put("deliveredAt", Instant.now());
+            map.put("deliveryMethod", "AUTOMATIC_SIMULATION");
+            map.put("location", "Customer Address");
+        });
+    }
+
+    private Map<String, Object> proofMetadata(ProofOfDeliveryDto proof) {
+        return buildMetadata(map -> {
+            map.put("deliveredAt", Instant.now());
+            map.put("deliveryMethod", "MANUAL_CONFIRMATION");
+            map.put("recipientName", proof.getRecipientName());
+            map.put("deliveryPhotoUrl", proof.getDeliveryPhotoUrl());
+            map.put("notes", proof.getNotes());
+        });
+    }
+
+    private Map<String, Object> buildMetadata(java.util.function.Consumer<Map<String, Object>> builder) {
+        Map<String, Object> metadata = new HashMap<>();
+        builder.accept(metadata);
+        return metadata;
     }
 
     private TrackingUpdateDto mapToTrackingUpdate(ShipmentEvent event) {
@@ -198,10 +182,5 @@ public class DeliveryServiceImpl implements DeliveryService {
         dto.setOccurredAt(event.getOccurredAt());
         dto.setMetadata(event.getMetadataMap());
         return dto;
-    }
-
-    private String calculateEstimatedDeliveryTime() {
-        // Simple calculation - add 2 hours to current time
-        return Instant.now().plus(Duration.ofHours(2)).toString();
     }
 }
