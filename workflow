@@ -140,6 +140,12 @@ sequenceDiagram
 
 
 
+
+  OrderService → OrderCreatedEvent → InventoryService → InventoryReservedEvent
+  → DispatchService → ShipmentDispatchedEvent → DeliveryService → ShipmentDeliveredEvent
+
+
+
 //docker comands to remove the unused imgaes
 docker system prune -a --volumes
 -a: remove all unused images (not just dangling)
@@ -194,3 +200,19 @@ Clean Architecture Layers (Hybrid Setup)
 │  - Entities                                │
 │  - Value Objects                           │
 └────────────────────────────────────────────┘
+
+
+
+
+//✅ Structure of a Good Commit Message (One-Liner)
+<type>(<scope>): <what> and <why (optional)>
+✅ Common <type> prefixes (from Conventional Commits):
+Type	Use Case
+feat	New feature
+fix	Bug fix
+refactor	Code restructuring, no behavior change
+chore	Non-functional task (build, config, cleanup)
+test	Adding or updating tests
+docs	Documentation changes
+style	Code formatting, no logic changes
+perf	Performance improvement
