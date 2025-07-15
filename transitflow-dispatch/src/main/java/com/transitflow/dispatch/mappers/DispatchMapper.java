@@ -18,4 +18,7 @@ public interface DispatchMapper {
 
     // Vehicle Mappings
     VehicleDto toVehicleDto(Vehicle vehicle);
+
+    Vehicle fromVehicleDto(VehicleDto dto);
+
 }

@@ -49,7 +49,10 @@ public class OutboxPublisherService {
 
         Object payloadObj = resolvePayload(topic, payload); // Deserialize
 
-        kafkaTemplate.send(topic, key, payloadObj).get();
+        kafkaTemplate.executeInTransaction(kt -> {
+            kt.send(topic, key, payloadObj);
+            return true;
+        });
     }
     private Object resolvePayload(String topic, String json) throws Exception {
         switch (topic) {
