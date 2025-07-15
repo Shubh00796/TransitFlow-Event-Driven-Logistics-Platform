@@ -21,7 +21,11 @@
 
 ### 🧭 Layered Flow Inside Each Module
 
-![Layered Module Architecture](docs/Flowchart.png)
+
+<p align="center">
+  <img src="docs/Flowchart.png" alt="Layered Module Architecture" height="550">
+</p>
+
 
 > All modules follow a **layered hexagonal architecture** for separation of concerns, testability, and clean dependency flow.
 
@@ -44,107 +48,142 @@ All state transitions are triggered asynchronously via Kafka, never through dire
 
 ### 🗂️ Outbox Pattern (Order Module)
 
-![Outbox Pattern Sequence Diagram](docs/flowchart2.png)
+<p align="center">
+  <img src="docs/flowchart2.png" alt="Outbox Pattern Sequence Diagram height="750">
+</p>
 
 > The **Outbox pattern** ensures events are reliably published by storing them in a DB outbox and processing them via a background publisher.
 
-🧱 Example Module Structure (transitflow-order)
+
+
+
+## 🧱 Module Structure
+
+```
 transitflow-order/
 └── src/
     └── main/
         ├── java/com/transitflow/order/
-        │   ├── adapter/in/web               ← REST Controllers
-        │   ├── adapter/out/jpa              ← JPA Repositories & Entities
-        │   ├── application/port/in          ← Service Interfaces
-        │   ├── application/port/out         ← Repository Interfaces
-        │   ├── application/service          ← Service Implementation
-        │   ├── domain                       ← Domain Models
-        │   ├── mapper                       ← MapStruct Mappers
-        │   ├── messaging/publisher          ← Kafka Publisher
-        │   └── validator                    ← Request Validators
+        │   ├── adapter/in/web              ← REST Controllers
+        │   ├── adapter/out/jpa             ← JPA Repositories & Entities
+        │   ├── application/port/in         ← Service Interfaces
+        │   ├── application/port/out        ← Repository Interfaces
+        │   ├── application/service         ← Service Implementation
+        │   ├── domain                      ← Domain Models
+        │   ├── mapper                      ← MapStruct Mappers
+        │   ├── messaging/publisher         ← Kafka Publisher
+        │   └── validator                   ← Request Validators
         └── resources/
             └── application.yml
+```
 
-🔄 Event Chronology (Kafka)
-ORDERED ➝ RESERVED ➝ DISPATCHED ➝ DELIVERED
-Each service emits or consumes domain events via Kafka:
-| Event                     | Publisher         | Consumer          |
-| ------------------------- | ----------------- | ----------------- |
-| `OrderCreatedEvent`       | Order Service     | Inventory Service |
-| `InventoryReservedEvent`  | Inventory Service | Dispatch Service  |
-| `ShipmentDispatchedEvent` | Dispatch Service  | Delivery Service  |
-| `ShipmentDeliveredEvent`  | Delivery Service  | Order Service     |
+> 🧼 Clean Hexagonal Architecture — separating business logic, infrastructure, and delivery.
 
-📦 Outbox Pattern (Resilience & Reliability)
-All services use the Outbox Pattern to safely publish events:
+---
 
-Persist event in DB in the same transaction.
+## 🔄 Event Chronology
 
-Outbox publisher reads and publishes to Kafka.
+```
+ORDERED → RESERVED → DISPATCHED → DELIVERED
+```
 
-Ensures eventual consistency and fault tolerance.
+Each microservice **emits/consumes domain events** using **Apache Kafka** for asynchronous communication.
 
-✅ Delivery Module Components
+---
+
+## 📦 Outbox Pattern
+
+Used across services for **resilience** and **eventual consistency**:
+
+- Persist domain event in the database within the same transaction.
+- Periodic publisher reads from outbox table and emits to Kafka.
+- Ensures fault tolerance across services.
+
+---
+
+## 🚛 Delivery Module Overview
+
 | Component                 | Purpose                                     |
-| ------------------------- | ------------------------------------------- |
-| `ShipmentEvent`           | Entity to track delivery steps in DB        |
-| `ShipmentEventRepository` | DB access for delivery history              |
-| `DeliveryKafkaConfig`     | Kafka consumer config for dispatch events   |
-| `DeliveryService`         | Core delivery business logic                |
+|--------------------------|---------------------------------------------|
+| `ShipmentEvent`           | Tracks delivery lifecycle in DB             |
+| `ShipmentEventRepository` | Access to delivery event history            |
+| `DeliveryKafkaConfig`     | Kafka consumer setup for dispatch events    |
+| `DeliveryService`         | Core business logic                         |
 | `DeliveryEventListener`   | Consumes `ShipmentDispatchedEvent`          |
-| `DeliveryEventFactory`    | Creates `ShipmentDeliveredEvent`            |
-| `OutboxPublisher`         | Publishes `ShipmentDeliveredEvent` to Kafka |
-| `DeliveryController`      | REST API for manual delivery operations     |
+| `DeliveryEventFactory`    | Produces `ShipmentDeliveredEvent`           |
+| `OutboxPublisher`         | Emits `ShipmentDeliveredEvent` to Kafka     |
+| `DeliveryController`      | REST API for manual delivery ops            |
 
+---
 
- 🐳 Docker-Based Local Development
- 🔧 Make startup scripts executable:
-   chmod +x transitflow-*/wait-for-mysql.sh
-🚀 Build and run all services:
-   mvn clean package -DskipTests
-  docker compose up -d --build
+## 🐳 Docker-Based Dev Setup
 
+```bash
+# Make startup scripts executable
+chmod +x transitflow-*/wait-for-mysql.sh
 
-  ⚡ Quick Start
-# 1. Clone the repository
+# Build artifacts
+mvn clean package -DskipTests
+
+# Start all services via Docker Compose
+docker compose up -d --build
+```
+
+---
+
+## ⚡ Quick Start
+
+```bash
+# 1️⃣ Clone the repo
 git clone https://github.com/Shubh00796/TransitFlow-Event-Driven-Logistics-Platform.git
 cd TransitFlow-Event-Driven-Logistics-Platform
 
-# 2. Build and start services
+# 2️⃣ Build & boot services
 mvn clean package -DskipTests
 docker compose up -d --build
 
-# 3. Place an order
+# 3️⃣ Place an order
 curl -X POST http://localhost:8081/api/orders \
      -H 'Content-Type: application/json' \
      -d '{"productId":1,"quantity":2}'
+```
 
+---
 
-📚 Further Reading
-📘 Event-Driven Architecture - Martin Fowler
+## 📚 Resources
 
-📘 Kafka Documentation
+- 📘 [Event-Driven Architecture — Martin Fowler](https://martinfowler.com/articles/201701-event-driven.html)
+- 📘 [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
+- 📘 [Outbox Pattern — Microservices.io](https://microservices.io/patterns/data/application-events.html)
 
-📘 Outbox Pattern - Microservices.io
+---
 
-🤝 Contributing
-We welcome contributions! 🚀
-To contribute:
+## 🤝 Contributing
 
-Fork the repo
+We welcome your ideas and PRs! 🚀
 
-Create your branch (git checkout -b feature/xyz)
+```bash
+# Fork + branch
+git checkout -b feature/my-feature
 
-Commit your changes
+# Commit & push changes
+git commit -m "Add feature"
+git push origin feature/my-feature
 
-Open a pull request
+# Open a pull request
+```
 
-For major changes, please open an issue first to discuss your ideas.
+For large changes, create an issue first to discuss your proposal.
 
+---
 
+## 🙌 Support & Feedback
 
-🙌 Support & Feedback
-If you find this useful, consider starring ⭐ the repo or opening an issue to suggest improvements.
+Found this useful?  
+⭐ Star the repo or open an issue with suggestions.
+
+---
+
 
 
 ### 🚚 Event Flow
