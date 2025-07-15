@@ -85,9 +85,8 @@
                 <version>3.5.3</version> <!-- Match your Spring Boot version -->
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
+                        <id>repackage</id>
+                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>

@@ -144,7 +144,17 @@ sequenceDiagram
   OrderService → OrderCreatedEvent → InventoryService → InventoryReservedEvent
   → DispatchService → ShipmentDispatchedEvent → DeliveryService → ShipmentDeliveredEvent
 
+✅ Delivery Module Components Created:
 
+ShipmentEvent Entity - Tracks delivery events in database
+ShipmentEventRepository - Data access for tracking events
+Delivery Kafka Config - Consumer configuration for ShipmentDispatchedEvent
+DeliveryService - Core business logic for delivery processing
+DeliveryEventListener - Kafka consumer for dispatch events
+DeliveryEventFactory - Creates ShipmentDeliveredEvent
+ShipmentDeliveredEvent - Event published when delivery completes
+DeliveryController - REST endpoints for tracking and manual operations
+Updated OutboxPublisher - Handles ShipmentDeliveredEvent publishing
 
 //docker comands to remove the unused imgaes
 docker system prune -a --volumes
