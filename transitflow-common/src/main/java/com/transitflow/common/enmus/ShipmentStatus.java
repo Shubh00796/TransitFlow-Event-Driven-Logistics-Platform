@@ -4,5 +4,6 @@ package com.transitflow.common.enmus;
 public enum ShipmentStatus {
     DISPATCHED,
     CANCELLED,
-    DELIVERED
+    DELIVERED,
+    IN_TRANSIT
 }

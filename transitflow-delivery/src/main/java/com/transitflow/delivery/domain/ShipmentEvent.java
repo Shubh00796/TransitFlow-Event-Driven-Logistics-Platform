@@ -4,18 +4,20 @@ package com.transitflow.delivery.domain;
 import com.transitflow.common.enmus.ShipmentStatus;
 import com.transitflow.delivery.utils.MetadataUtils;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.Map;
 
 @Entity
-@Table(name = "shipment_events")
-@Data
+@Table(name = "shipment_events", indexes = {
+        @Index(name = "idx_shipment_id", columnList = "shipment_id"),
+        @Index(name = "idx_event_type", columnList = "event_type"),
+        @Index(name = "idx_occurred_at", columnList = "occurred_at")
+})
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
