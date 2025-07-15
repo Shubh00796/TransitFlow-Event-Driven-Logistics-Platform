@@ -3,11 +3,14 @@ package com.transitflow.dispatch.service.business_logic;
 import com.transitflow.common.dtos.disptach.ShipmentRequestDto;
 import com.transitflow.common.dtos.disptach.ShipmentResponseDto;
 import com.transitflow.common.enmus.ShipmentStatus;
+import com.transitflow.common.enmus.VehicleStatus;
 import com.transitflow.common.events.ShipmentDispatchedEvent;
 import com.transitflow.common.outbox.DomainEventPublisher;
 import com.transitflow.dispatch.domain.Shipment;
+import com.transitflow.dispatch.domain.Vehicle;
 import com.transitflow.dispatch.mappers.DispatchMapper;
 import com.transitflow.dispatch.repository.data_access_layer.ShipmentRepoService;
+import com.transitflow.dispatch.repository.data_access_layer.VehicleRepoService;
 import com.transitflow.dispatch.service.ShipmentService;
 import com.transitflow.dispatch.utils.ShipmentEventFactory;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Service
@@ -29,7 +33,7 @@ import java.util.stream.Stream;
 public class ShipmentServiceImpl implements ShipmentService {
     private final ShipmentRepoService shipmentRepoService;
     private final DispatchMapper mapper;
-
+    private final VehicleRepoService vehicleRepoService;
     private final DomainEventPublisher domainEventPublisher;
     private final ShipmentEventFactory shipmentEventFactory;
 
@@ -44,6 +48,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Transactional
     public ShipmentResponseDto createShipment(ShipmentRequestDto request) {
         validateRequest(request);
+        validateShipmentRequest(request);
 
         Shipment shipment = buildDispatchedShipment(request);
         Shipment savedShipment = shipmentRepoService.save(shipment);
@@ -84,19 +89,12 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Transactional
     public void markAsDelivered(Long shipmentId, Instant deliveredAt) {
         Shipment shipment = fetchOrThrow(shipmentId);
-
-        if (shipment.getStatus() == ShipmentStatus.DELIVERED) {
-            log.info("Shipment {} already marked as delivered", shipmentId);
-            return;
-        }
-
+        if (checkIfShipmentIsDeliverdOrNot(shipmentId, shipment)) return;
         shipment.setStatus(ShipmentStatus.DELIVERED);
         shipment.setDeliveredAt(Optional.ofNullable(deliveredAt).orElseGet(Instant::now));
 
         shipmentRepoService.save(shipment);
     }
-
-
 
 
     //**************PRIVATE-HELPERS*********************
@@ -134,8 +132,39 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .toList();
     }
 
+
+    private void validateShipmentRequest(ShipmentRequestDto request) {
+        validate(request.getVehicleId() != null, "Vehicle ID must not be null.");
+        Vehicle vehicle = vehicleRepoService.findById(request.getVehicleId());
+
+        validate(vehicle.getStatus() == VehicleStatus.AVAILABLE,
+                () -> "Vehicle is not available for shipment. Current status: " + vehicle.getStatus());
+
+    }
+
+
     private Page<ShipmentResponseDto> mapPage(Page<Shipment> page) {
         return page.map(this::mapToResponse);
+    }
+
+    private void validate(boolean condition, String message) {
+        if (!condition) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    private void validate(boolean condition, Supplier<String> messageSupplier) {
+        if (!condition) {
+            throw new IllegalArgumentException(messageSupplier.get());
+        }
+    }
+
+    private static boolean checkIfShipmentIsDeliverdOrNot(Long shipmentId, Shipment shipment) {
+        if (shipment.getStatus() == ShipmentStatus.DELIVERED) {
+            log.info("Shipment {} already marked as delivered", shipmentId);
+            return true;
+        }
+        return false;
     }
 
 

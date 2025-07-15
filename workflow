@@ -18,6 +18,9 @@
 3. Dispatch module: Dispatches shipment based on order
 4. Delivery module: Receives delivery updates
 
+ORDERED ➝ RESERVED ➝ DISPATCHED ➝ DELIVERED
+Each state is transitioned by a module, not by calling each other, but by publishing and consuming events.
+
 
 //CHRNOLOGICAL-ORDER
 1. transitflow-common        ← shared DTOs/events/enums
@@ -26,6 +29,27 @@
 4. transitflow-dispatch      ← assigns shipment
 5. transitflow-delivery      ← tracks delivery
 6. transitflow-kafka-config  ← shared Kafka bean config (optional)
+
+Client (POST /api/orders)
+  ⬇
+OrderService
+  📝 orders table
+  📣 Kafka: OrderCreatedEvent
+  ⬇
+InventoryService
+  📉 inventory_items table
+  📣 Kafka: InventoryReservedEvent
+  ⬇
+DispatchService
+  🚚 assign vehicle
+  📝 shipments table
+  📣 Kafka: ShipmentDispatchedEvent
+  ⬇
+DeliveryService
+  📦 simulate delivery
+  ✅ update status
+  📣 Kafka: ShipmentDeliveredEvent
+
 
 🧱 Layered Flow Inside Each Module
 
